@@ -7,5 +7,5 @@ huggingface-hub
 sentence-transformers
 faiss-cpu
 pypdf
-requests
 beautifulsoup4
+requests

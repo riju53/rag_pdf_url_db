@@ -125,7 +125,7 @@ if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
 
     chunks = text_splitter.split_documents(docs)
 
-    st.success(f"✂️ Created {len(chunks)} chunks")
+    st.sidebar.success(f"✂️ Created {len(chunks)} chunks")
 
 
     # --------------------------------------------------

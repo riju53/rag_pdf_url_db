@@ -111,7 +111,7 @@ if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
         st.stop()
 
 
-    st.success(f"📚 Loaded {len(docs)} documents")
+    st.sidebar.success(f"📚 Loaded {len(docs)} documents")
 
 
     # --------------------------------------------------

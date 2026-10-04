@@ -3,7 +3,6 @@ langchain
 langchain-community
 langchain-core
 langchain-huggingface
-huggingface-hub
 sentence-transformers
 faiss-cpu
 pypdf

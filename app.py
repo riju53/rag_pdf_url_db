@@ -27,7 +27,7 @@ st.title("☀️ AI Based RAG Application")
 
 llm = HuggingFaceEndpoint(
     repo_id="openai/gpt-oss-120b",
-    huggingfacehub_api_token = "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",
+    huggingfacehub_api_token = "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",
     max_new_tokens=2500
 )
 

@@ -1,16 +1,8 @@
 import streamlit as st
 
-from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
-from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_core.prompts import PromptTemplate
 
 
-# --------------------------------------------------
 # Streamlit configuration
-# --------------------------------------------------
 
 st.set_page_config(
     page_title="AI Powered RAG Application",
@@ -21,9 +13,8 @@ st.set_page_config(
 st.title("☀️ AI Based RAG Application")
 
 
-# --------------------------------------------------
 # Hugging Face LLM
-# --------------------------------------------------
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 
 llm = HuggingFaceEndpoint(
     repo_id="openai/gpt-oss-120b",
@@ -34,9 +25,8 @@ llm = HuggingFaceEndpoint(
 model = ChatHuggingFace(llm=llm)
 
 
-# --------------------------------------------------
 # PDF Upload
-# --------------------------------------------------
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 
 pdf_list = st.sidebar.file_uploader(
     "📄 Upload PDF files",
@@ -45,9 +35,7 @@ pdf_list = st.sidebar.file_uploader(
 )
 
 
-# --------------------------------------------------
 # Website URL
-# --------------------------------------------------
 
 url = st.sidebar.text_input(
     "🌐 Enter website URL",
@@ -55,17 +43,13 @@ url = st.sidebar.text_input(
 )
 
 
-# --------------------------------------------------
 # Build Knowledge Base
-# --------------------------------------------------
 
 if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
 
     docs = []
 
-    # -----------------------------
     # Load PDFs
-    # -----------------------------
 
     if pdf_list:
 
@@ -80,9 +64,7 @@ if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
             docs.extend(pdf_loader.load())
 
 
-    # -----------------------------
     # Load Website
-    # -----------------------------
 
     if url:
 
@@ -97,9 +79,7 @@ if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
             st.error(f"Could not load website: {e}")
 
 
-    # -----------------------------
     # Check documents
-    # -----------------------------
 
     if not docs:
 
@@ -114,9 +94,8 @@ if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
     st.sidebar.success(f"📚 Loaded {len(docs)} documents")
 
 
-    # --------------------------------------------------
     # Text Splitting
-    # --------------------------------------------------
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
@@ -128,29 +107,15 @@ if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
     st.sidebar.success(f"✂️ Created {len(chunks)} chunks")
 
 
-    # --------------------------------------------------
     # Embeddings
-    # --------------------------------------------------
+    from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 
     embedding = HuggingFaceEmbeddings(
         model_name="BAAI/bge-small-en-v1.5"
     )
-    # from langchain_huggingface import HuggingFaceEmbeddings
 
-    # embedding = HuggingFaceEmbeddings(
-    # model_name="sentence-transformers/all-MiniLM-L6-v2",
-    # model_kwargs={"device": "cpu"},
-    # encode_kwargs={"normalize_embeddings": True}
-    # )
-    # embedding = HuggingFaceEmbeddings(
-    # model_name="./embedding_model/all-MiniLM-L6-v2",
-    # model_kwargs={"device": "cpu"}
-    # )
-
-
-    # --------------------------------------------------
     # FAISS Vector Store
-    # --------------------------------------------------
+    from langchain_community.vectorstores import FAISS
 
     vector_store = FAISS.from_documents(
         chunks,
@@ -162,9 +127,7 @@ if st.sidebar.button("🔨 Build Knowledge Base", type="primary"):
     st.success("✅ Knowledge base created successfully!")
 
 
-# --------------------------------------------------
 # Question
-# --------------------------------------------------
 
 question = st.text_input(
     "💬 Enter your question",
@@ -172,9 +135,7 @@ question = st.text_input(
 )
 
 
-# --------------------------------------------------
 # Answer
-# --------------------------------------------------
 
 if st.button("🤖 Answer"):
 
@@ -198,9 +159,7 @@ if st.button("🤖 Answer"):
     vector_store = st.session_state.vector_store
 
 
-    # --------------------------------------------------
     # Retrieval
-    # --------------------------------------------------
 
     retriever = vector_store.as_retriever(
         search_type="similarity",
@@ -210,18 +169,15 @@ if st.button("🤖 Answer"):
     retriever_docs = retriever.invoke(question)
 
 
-    # --------------------------------------------------
     # Context
-    # --------------------------------------------------
 
     context_text = "\n\n".join(
         [doc.page_content for doc in retriever_docs]
     )
 
 
-    # --------------------------------------------------
     # Prompt
-    # --------------------------------------------------
+    from langchain_core.prompts import PromptTemplate
 
     prompt = PromptTemplate(
         template="""
@@ -253,9 +209,7 @@ Instructions:
     )
 
 
-    # --------------------------------------------------
     # Generate Answer
-    # --------------------------------------------------
 
     with st.spinner("🤖 Searching your knowledge base..."):
 
